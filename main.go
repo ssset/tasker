@@ -10,6 +10,7 @@ func main() {
 	list := flag.Bool("list", false, "List all tasks")
 	done := flag.Int("done", 0, "Mark task as done")
 	delete := flag.Int("delete", 0, "Delete task by ID")
+	filterDone := flag.Bool("filter-done", false, "Filter list to show only completed tasks")
 	flag.Parse()
 
 	tasks, err := loadTasks("tasks.json")
@@ -35,12 +36,20 @@ func main() {
 		if len(tasks.Tasks) == 0 {
 			fmt.Println("Нет задач")
 		} else {
+			found := false
 			for _, task := range tasks.Tasks {
+				if *filterDone && !task.Done {
+					continue
+				}
 				status := " "
 				if task.Done {
 					status = "x"
 				}
 				fmt.Printf("[%s] %d: %s\n", status, task.ID, task.Title)
+				found = true
+			}
+			if !found && *filterDone {
+				fmt.Println("Нет выполненных задач")
 			}
 		}
 	} else if *delete > 0 {
