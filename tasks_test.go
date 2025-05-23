@@ -32,3 +32,24 @@ func TestSaveTasks(t *testing.T) {
 		t.Errorf("Expected one task 'Test', got %v", loaded.Tasks)
 	}
 }
+
+func TestDeleteTask(t *testing.T) {
+	tasks := TaskList{
+		Tasks: []Task{
+			{ID: 1, Title: "Test1", Done: false},
+			{ID: 2, Title: "Test2", Done: false},
+		},
+	}
+	err := saveTasks(tasks, "test.json")
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	defer os.Remove("test.json")
+	loaded, err := loadTasks("test.json")
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	if len(loaded.Tasks) != 2 {
+		t.Errorf("Expected 2 tasks, got %v", loaded.Tasks)
+	}
+}
