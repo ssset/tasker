@@ -9,6 +9,7 @@ func main() {
 	add := flag.String("add", "", "Add a new task")
 	list := flag.Bool("list", false, "List all tasks")
 	done := flag.Int("done", 0, "Mark task as done")
+	delete := flag.Int("delete", 0, "Delete task by ID")
 	flag.Parse()
 
 	tasks, err := loadTasks("tasks.json")
@@ -40,6 +41,18 @@ func main() {
 					status = "x"
 				}
 				fmt.Printf("[%s] %d: %s\n", status, task.ID, task.Title)
+			}
+		}
+	} else if *delete > 0 {
+		for i, task := range tasks.Tasks {
+			if task.ID == *delete {
+				tasks.Tasks = append(tasks.Tasks[:i], tasks.Tasks[i+1:]...)
+				if err := saveTasks(tasks, "tasks.json"); err != nil {
+					fmt.Println("Ошибка при сохранении задач:", err)
+					return
+				}
+				fmt.Println("Задача удалена", task.Title)
+				return
 			}
 		}
 	} else if *done > 0 {
